@@ -1,5 +1,6 @@
 import os
 import requests
+from pathlib import Path
 
 def downloadMovieAudio(movieKey, link):
     result = os.system('ffmpeg -i "'+ link + '" ./../../filimo/' + movieKey +'/' + movieKey + '.mp3')
@@ -51,6 +52,7 @@ def getLinks(movieKey):
         return []
     
 def downloadSubtitle(movieKey, sublink):
+    Path('./../../filimo/' + movieKey +'/').mkdir(parents=True, exist_ok=True)
     subtitle = requests.get(sublink)
     with open('./../../filimo/' + movieKey +'/' + movieKey + '.srt', 'wb') as file:
         file.write(subtitle.content)
