@@ -34,8 +34,10 @@ def getLinks(movieKey):
     if response.status_code == 200:
         print(f"Links gotten successfully")
 
-
         sublink = ''
+        if 'tracks' not in response.json()['data']['attributes'] or not response.json()['data']['attributes']['tracks']:
+            print(f"NO_TRACKS: {response.status_code}")
+            return []
         for subtitle in response.json()['data']['attributes']['tracks']:
             if subtitle['srclang'] == 'fa':
                 sublink = subtitle['src']
@@ -69,3 +71,5 @@ def proccessMovie(movieKey):
         return False
     
     return True
+
+print(getLinks('lvk80'))
