@@ -1,9 +1,11 @@
 import sqlite3
 
+dbPath = './../../filimo/data.db'
+
 try:
    
     # Connect to DB and create a cursor
-    sqliteConnection = sqlite3.connect('movies.db')
+    sqliteConnection = sqlite3.connect(dbPath)
     cursor = sqliteConnection.cursor()
  
     # Create a table
@@ -11,7 +13,11 @@ try:
     ID TEXT, 
     KEY TEXT, 
     TYPE TEXT, 
-    TITLE TEXT);''') 
+    TITLE TEXT,
+    SERIAL_ID TEXT,
+    SERIAL_TITLE TEXT,
+    STATUS TEXT
+                   );''') 
  
     # Close the cursor
     cursor.close()
