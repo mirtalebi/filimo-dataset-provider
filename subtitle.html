@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MP3 Subtitle Player (Editable)</title>
+<style>
+  #audio-player {
+    width: 100%;
+  }
+  #subtitle-container {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 1.5em;
+    font-family: sans-serif;
+  }
+  #subtitle-editor {
+    width: 80%;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+  #subtitle-list {
+    list-style: none;
+    padding: 0;
+  }
+  .subtitle-item {
+    border-bottom: 1px solid #eee;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+  }
+  .subtitle-item input {
+    margin-right: 5px;
+  }
+  .subtitle-item button {
+    margin-left: auto;
+  }
+</style>
+</head>
+<body>
+
+<input type="file" id="audio-file" accept=".mp3">
+<input type="file" id="json-file" accept=".json">
+<audio id="audio-player" controls></audio>
+<div id="subtitle-container"></div>
+
+<div id="subtitle-editor">
+  <h2>Edit Subtitles</h2>
+  <ul id="subtitle-list"></ul>
+  <button id="add-subtitle">Add Subtitle</button>
+</div>
+
+<script>
+  const audioFileInput = document.getElementById('audio-file');
+  const jsonFileInput = document.getElementById('json-file');
+  const audioPlayer = document.getElementById('audio-player');
+  const subtitleContainer = document.getElementById('subtitle-container');
+  const subtitleList = document.getElementById('subtitle-list');
+  const addSubtitleButton = document.getElementById('add-subtitle');
+
+  let subtitles = [];
+
+  audioFileInput.addEventListener('change', handleAudioFile);
+  jsonFileInput.addEventListener('change', handleJsonFile);
+  audioPlayer.addEventListener('timeupdate', updateSubtitle);
+  addSubtitleButton.addEventListener('click', addSubtitle);
+
+  function handleAudioFile(event) {
+    const file = event.target.files[0];
+    const objectURL = URL.createObjectURL(file);
+    audioPlayer.src = objectURL;
+  }
+
+  function handleJsonFile(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      try {
+        subtitles = JSON.parse(e.target.result);
+        renderSubtitles();
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+        alert('Invalid JSON file.');
+      }
+    };
+
+    reader.readAsText(file);
+  }
+
+  function updateSubtitle() {
+    const currentTime = audioPlayer.currentTime;
+    console.log(audioPlayer.currentTime)
+    let currentSubtitle = '';
+
+    for (const subtitle of subtitles) {
+      if (currentTime >= subtitle.start && currentTime <= subtitle.end) {
+        currentSubtitle = subtitle.text;
+        break;
+      }
+    }
+
+    subtitleContainer.textContent = currentSubtitle;
+  }
+
+  function renderSubtitles() {
+    subtitleList.innerHTML = '';
+    subtitles.forEach((subtitle, index) => {
+      const listItem = document.createElement('li');
+      listItem.className = 'subtitle-item';
+      listItem.innerHTML = `
+        <input type="text" value="${subtitle.text}" class="subtitle-text">
+        <input type="number" value="${subtitle.start}" class="subtitle-start">
+        <input type="number" value="${subtitle.end}" class="subtitle-end">
+        <button data-index="${index}" class="delete-subtitle">Delete</button>
+      `;
+      subtitleList.appendChild(listItem);
+    });
+
+    // Add event listeners for editing and deleting
+    document.querySelectorAll('.subtitle-text, .subtitle-start, .subtitle-end').forEach(input => {
+      input.addEventListener('change', updateSubtitleData);
+    });
+    document.querySelectorAll('.delete-subtitle').forEach(button => {
+      button.addEventListener('click', deleteSubtitle);
+    });
+  }
+
+  function updateSubtitleData(event) {
+    const listItem = event.target.parentElement;
+    const index = Array.from(subtitleList.children).indexOf(listItem);
+    subtitles[index].text = listItem.querySelector('.subtitle-text').value;
+    subtitles[index].start = parseFloat(listItem.querySelector('.subtitle-start').value);
+    subtitles[index].end = parseFloat(listItem.querySelector('.subtitle-end').value);
+  }
+
+  function deleteSubtitle(event) {
+    const index = parseInt(event.target.dataset.index);
+    subtitles.splice(index, 1);
+    renderSubtitles();
+  }
+
+  function addSubtitle() {
+    subtitles.push({ text: 'New Subtitle', start: 0, end: 5 });
+    renderSubtitles();
+  }
+</script>
+
+</body>
+</html>
