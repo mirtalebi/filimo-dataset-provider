@@ -67,13 +67,13 @@ def get_data_from_speechmatic(predestination, audioName):
 
 
 def proccess_item(audioName):
-  if check_already_exists(audioName):
-    print(f"\t{audioName}: Error - has already exists")
-    return
-
   row = check_invalidation(audioName)
   if not row[7] == 'VALID':
     print(f"\t{audioName}: Error - is invalid")
+    return
+  
+  if check_already_exists(row[4], audioName):
+    print(f"\t{audioName}: Error - has already exists")
     return
 
   get_data_from_speechmatic(row[4], audioName)
