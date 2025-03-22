@@ -51,7 +51,7 @@ def get_data_from_speechmatic(predestination, audioName):
               audio=f"content/filimo/{predestination}/{audioName}",
               transcription_config=conf,
           )
-          print(f'job {job_id} submitted successfully, waiting for transcript')
+          print(f'{audioName}: job {job_id} submitted successfully, waiting for transcript')
           transcript = client.wait_for_completion(job_id, transcription_format='json-v2')
           # To see the full output, try setting transcription_format='json-v2'.
           write_to_output(transcript, f"content/filimo/{predestination}/{audioName.split('.')[0]}.sm.json")
