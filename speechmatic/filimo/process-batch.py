@@ -68,6 +68,10 @@ def get_data_from_speechmatic(predestination, audioName):
 
 def proccess_item(audioName):
   row = check_invalidation(audioName)
+  if not row:
+    print(f"\t{audioName}: Error - doesnt exist in database!")
+    return
+  
   if not row[7] == 'VALID':
     print(f"\t{audioName}: Error - is invalid")
     return
