@@ -22,9 +22,9 @@ def check_invalidation(audioName):
 
 
 
-def check_already_exists(audioName):
+def check_already_exists(predestination, audioName):
   audioName = audioName.split('.')[0]
-  return os.path.exists(f"content/filimo/02tfa/{audioName}.sm.json")
+  return os.path.exists(f"content/filimo/{predestination}/{audioName}.sm.json")
 
 
 
