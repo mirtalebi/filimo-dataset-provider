@@ -29,7 +29,7 @@ def check_already_exists(audioName):
 
 
 def get_data_from_speechmatic(predestination, audioName):
-  API_KEY = "c8u03VBOP4uTym03HJkdATKUDVeDq0Ui"
+  API_KEY = "Ypb08Mu1y4im5i0QapmqSihldZh5tqvF"
   LANGUAGE = "fa"
 
   settings = ConnectionSettings(
@@ -51,11 +51,11 @@ def get_data_from_speechmatic(predestination, audioName):
               audio=f"content/filimo/{predestination}/{audioName}",
               transcription_config=conf,
           )
-          print(f'{audioName}: job {job_id} submitted successfully, waiting for transcript')
+          print(f'\t{audioName}: job {job_id} submitted successfully, waiting for transcript')
           transcript = client.wait_for_completion(job_id, transcription_format='json-v2')
           # To see the full output, try setting transcription_format='json-v2'.
           write_to_output(transcript, f"content/filimo/{predestination}/{audioName.split('.')[0]}.sm.json")
-          print(f'{audioName}: DONE')
+          print(f'\t{audioName}: DONE')
       except HTTPStatusError as e:
           if e.response.status_code == 401:
               print('Invalid API key - Check your API_KEY at the top of the code!')
