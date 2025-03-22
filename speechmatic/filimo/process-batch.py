@@ -83,7 +83,7 @@ def process():
   for root, dirs, files in os.walk('content/filimo'):
     print(f"Directory: {root}")
     for file in files:
-      proccess_item(f"\tFile: {file}")
+      proccess_item(file)
 
 
 process()
