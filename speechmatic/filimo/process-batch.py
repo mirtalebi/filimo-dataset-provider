@@ -4,8 +4,6 @@ from speechmatics.models import ConnectionSettings
 from speechmatics.batch_client import BatchClient
 from httpx import HTTPStatusError
 
-DIRECTORY_INDEX = 0
-
 def write_to_output(data, output):
   with open(output, 'w') as f:
     f.write(str(data))
@@ -53,11 +51,11 @@ def get_data_from_speechmatic(predestination, audioName):
               audio=f"content/filimo/{predestination}/{audioName}",
               transcription_config=conf,
           )
-          print(f'{DIRECTORY_INDEX}\t{audioName}: job {job_id} submitted successfully, waiting for transcript')
+          print(f'\t{audioName}: job {job_id} submitted successfully, waiting for transcript')
           transcript = client.wait_for_completion(job_id, transcription_format='json-v2')
           # To see the full output, try setting transcription_format='json-v2'.
           write_to_output(transcript, f"content/filimo/{predestination}/{audioName.split('.')[0]}.sm.json")
-          print(f'{DIRECTORY_INDEX}\t{audioName}: DONE')
+          print(f'\t{audioName}: DONE')
       except HTTPStatusError as e:
           if e.response.status_code == 401:
               print('Invalid API key - Check your API_KEY at the top of the code!')
@@ -68,7 +66,7 @@ def get_data_from_speechmatic(predestination, audioName):
           
 
 
-def proccess_item(audioName):
+def proccess_item(audioName, DIRECTORY_INDEX):
   row = check_invalidation(audioName)
   if not row:
     print(f"{DIRECTORY_INDEX}\t{audioName}: Error - doesnt exist in database!")
@@ -87,12 +85,13 @@ def proccess_item(audioName):
 
 
 def process():
+  DIRECTORY_INDEX = 0
   for root, dirs, files in os.walk('content/filimo'):
     print(f"Directory: {root}")
     DIRECTORY_INDEX = DIRECTORY_INDEX + 1
     for file in files:
       if "mp3" in file:
-        proccess_item(file)
+        proccess_item(file, DIRECTORY_INDEX)
 
 
 process()
