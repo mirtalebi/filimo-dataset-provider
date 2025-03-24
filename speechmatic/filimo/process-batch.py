@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import threading
 from speechmatics.models import ConnectionSettings
 from speechmatics.batch_client import BatchClient
 from httpx import HTTPStatusError
@@ -28,7 +29,7 @@ def check_already_exists(predestination, audioName):
 
 
 
-def get_data_from_speechmatic(predestination, audioName):
+def get_data_from_speechmatic(predestination, audioName, DIRECTORY_INDEX):
   API_KEY = "Ypb08Mu1y4im5i0QapmqSihldZh5tqvF"
   LANGUAGE = "fa"
 
@@ -51,11 +52,11 @@ def get_data_from_speechmatic(predestination, audioName):
               audio=f"content/filimo/{predestination}/{audioName}",
               transcription_config=conf,
           )
-          print(f'\t{audioName}: job {job_id} submitted successfully, waiting for transcript')
+          print(f'{DIRECTORY_INDEX}\t{audioName}: job {job_id} submitted successfully, waiting for transcript')
           transcript = client.wait_for_completion(job_id, transcription_format='json-v2')
           # To see the full output, try setting transcription_format='json-v2'.
           write_to_output(transcript, f"content/filimo/{predestination}/{audioName.split('.')[0]}.sm.json")
-          print(f'\t{audioName}: DONE')
+          print(f'{DIRECTORY_INDEX}\t{audioName}: DONE')
       except HTTPStatusError as e:
           if e.response.status_code == 401:
               print('Invalid API key - Check your API_KEY at the top of the code!')
@@ -66,32 +67,41 @@ def get_data_from_speechmatic(predestination, audioName):
           
 
 
-def proccess_item(audioName, DIRECTORY_INDEX):
-  row = check_invalidation(audioName)
-  if not row:
-    print(f"{DIRECTORY_INDEX}\t{audioName}: Error - doesnt exist in database!")
-    return
-  
-  if not row[7] == 'VALID':
-    print(f"{DIRECTORY_INDEX}\t{audioName}: Error - is invalid")
-    return
-  
-  if check_already_exists(row[4], audioName):
-    print(f"{DIRECTORY_INDEX}\t{audioName}: Error - has already exists")
-    return
-
-  get_data_from_speechmatic(row[4], audioName)
+def proccess_item(audioName, DIRECTORY_INDEX, semaphore):
+  with semaphore:
+    row = check_invalidation(audioName)
+    if not row:
+        print(f"{DIRECTORY_INDEX}\t{audioName}: Error - doesnt exist in database!")
+        return
+    
+    if not row[7] == 'VALID':
+        print(f"{DIRECTORY_INDEX}\t{audioName}: Error - is invalid")
+        return
+    
+    if check_already_exists(row[4], audioName):
+        print(f"{DIRECTORY_INDEX}\t{audioName}: Error - has already exists")
+        return
+    get_data_from_speechmatic(row[4], audioName, DIRECTORY_INDEX)
 
 
 
 def process():
   DIRECTORY_INDEX = 0
+  max_threads = 10
+  semaphore = threading.Semaphore(max_threads)
+  threads = []
+  
   for root, dirs, files in os.walk('content/filimo'):
     print(f"Directory: {root}")
     DIRECTORY_INDEX = DIRECTORY_INDEX + 1
     for file in files:
       if "mp3" in file:
-        proccess_item(file, DIRECTORY_INDEX)
-
+        thread = threading.Thread(target=proccess_item, args=(file, DIRECTORY_INDEX, semaphore))
+        threads.append(thread)
+        thread.start()
+        # proccess_item()
+  
+  for thread in threads:
+        thread.join()
 
 process()
