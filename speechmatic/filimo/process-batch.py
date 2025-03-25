@@ -4,7 +4,7 @@ import threading
 from speechmatics.models import ConnectionSettings
 from speechmatics.batch_client import BatchClient
 from httpx import HTTPStatusError
-from utils import SinngletonLogger
+from utils import SingletonLogger
 
 logger = SingletonLogger().get_logger()
 API_KEY = input('api key:')
