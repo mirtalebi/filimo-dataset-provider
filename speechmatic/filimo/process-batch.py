@@ -89,21 +89,23 @@ def proccess_item(audioName, DIRECTORY_INDEX, semaphore):
 
 def process():
   DIRECTORY_INDEX = 0
-  max_threads = 10
-  semaphore = threading.Semaphore(max_threads)
-  threads = []
   
   for root, dirs, files in os.walk('content/filimo'):
     print(f"Directory: {root}")
     DIRECTORY_INDEX = DIRECTORY_INDEX + 1
+    max_threads = 10
+    semaphore = threading.Semaphore(max_threads)
+    threads = []
     for file in files:
       if "mp3" in file:
         thread = threading.Thread(target=proccess_item, args=(file, DIRECTORY_INDEX, semaphore))
         threads.append(thread)
         thread.start()
         # proccess_item()
-  
-  for thread in threads:
+        
+    for thread in threads:
         thread.join()
+  
+  
 
 process()
