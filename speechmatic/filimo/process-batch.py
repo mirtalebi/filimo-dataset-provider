@@ -31,8 +31,7 @@ def check_already_exists(predestination, audioName):
 
 
 
-def get_data_from_speechmatic(predestination, audioName, DIRECTORY_INDEX):
-  API_KEY = API_KEY
+def get_data_from_speechmatic(predestination, audioName, API_KEY, DIRECTORY_INDEX):
   LANGUAGE = "fa"
 
   settings = ConnectionSettings(
@@ -69,7 +68,7 @@ def get_data_from_speechmatic(predestination, audioName, DIRECTORY_INDEX):
           
 
 
-def proccess_item(audioName, DIRECTORY_INDEX, semaphore):
+def proccess_item(audioName, API_KEY, DIRECTORY_INDEX, semaphore):
   with semaphore:
     row = check_invalidation(audioName)
     if not row:
@@ -83,11 +82,11 @@ def proccess_item(audioName, DIRECTORY_INDEX, semaphore):
     if check_already_exists(row[4], audioName):
         print(f"{DIRECTORY_INDEX}\t{audioName}: Error - has already exists")
         return
-    get_data_from_speechmatic(row[4], audioName, DIRECTORY_INDEX)
+    get_data_from_speechmatic(row[4], audioName,API_KEY, DIRECTORY_INDEX)
 
 
 
-def process():
+def process(API_KEY):
   DIRECTORY_INDEX = 0
   
   for root, dirs, files in os.walk('content/filimo'):
@@ -98,7 +97,7 @@ def process():
     threads = []
     for file in files:
       if "mp3" in file:
-        thread = threading.Thread(target=proccess_item, args=(file, DIRECTORY_INDEX, semaphore))
+        thread = threading.Thread(target=proccess_item, args=(file, API_KEY, DIRECTORY_INDEX, semaphore))
         threads.append(thread)
         thread.start()
         # proccess_item()
@@ -108,4 +107,4 @@ def process():
   
   
 
-process()
+process(API_KEY)
