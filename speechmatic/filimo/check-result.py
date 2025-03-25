@@ -21,7 +21,7 @@ def check_already_exists(predestination, audioName):
   return os.path.exists(f"content/filimo/{predestination}/{audioName}.sm.json")
 
 
-
+DIRECTORY_INDEX = 0
 for root, dirs, files in os.walk('content/filimo'):
     print(f"Directory: {root}")
     DIRECTORY_INDEX = DIRECTORY_INDEX + 1
