@@ -4,10 +4,11 @@ import threading
 from speechmatics.models import ConnectionSettings
 from speechmatics.batch_client import BatchClient
 from httpx import HTTPStatusError
-from utils import SingletonLogger
+from utils import SinngletonLogger
 
 logger = SingletonLogger().get_logger()
 API_KEY = input('api key:')
+SKIP_NUM = int(input('skip num (0):'))
 
 def write_to_output(data, output):
   with open(output, 'w') as f:
@@ -96,6 +97,10 @@ def process(API_KEY):
     max_threads = 10
     semaphore = threading.Semaphore(max_threads)
     threads = []
+
+    if (DIRECTORY_INDEX < SKIP_NUM):
+       continue
+
     for file in files:
       if "mp3" in file:
         thread = threading.Thread(target=proccess_item, args=(file, API_KEY, DIRECTORY_INDEX, semaphore))
