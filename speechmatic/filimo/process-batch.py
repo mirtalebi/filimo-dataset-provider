@@ -4,7 +4,9 @@ import threading
 from speechmatics.models import ConnectionSettings
 from speechmatics.batch_client import BatchClient
 from httpx import HTTPStatusError
+from utils import SingletonLogger
 
+logger = SingletonLogger().get_logger()
 API_KEY = input('api key:')
 
 def write_to_output(data, output):
@@ -55,16 +57,15 @@ def get_data_from_speechmatic(predestination, audioName, API_KEY, DIRECTORY_INDE
           )
           print(f'{DIRECTORY_INDEX}\t{audioName}: job {job_id} submitted successfully, waiting for transcript')
           transcript = client.wait_for_completion(job_id, transcription_format='json-v2')
-          # To see the full output, try setting transcription_format='json-v2'.
           write_to_output(transcript, f"content/filimo/{predestination}/{audioName.split('.')[0]}.sm.json")
           print(f'{DIRECTORY_INDEX}\t{audioName}: DONE')
       except HTTPStatusError as e:
           if e.response.status_code == 401:
-              print('Invalid API key - Check your API_KEY at the top of the code!')
+              logger.error(f"Invalid API key - Check your API_KEY at the top of the code!: {str(e)}")
           elif e.response.status_code == 400:
-              print(e.response.json()['detail'])
+              logger.error(f"Error 400 : {str(e.response.json())}")
           else:
-              raise e
+              logger.error(f"Error UNKNOWNn : {str(e)}")
           
 
 
@@ -72,15 +73,15 @@ def proccess_item(audioName, API_KEY, DIRECTORY_INDEX, semaphore):
   with semaphore:
     row = check_invalidation(audioName)
     if not row:
-        print(f"{DIRECTORY_INDEX}\t{audioName}: Error - doesnt exist in database!")
+        print(f"{DIRECTORY_INDEX}\t{audioName}: Skip - doesnt exist in database!")
         return
     
     if not row[7] == 'VALID':
-        print(f"{DIRECTORY_INDEX}\t{audioName}: Error - is invalid")
+        print(f"{DIRECTORY_INDEX}\t{audioName}: Skip - is invalid")
         return
     
     if check_already_exists(row[4], audioName):
-        print(f"{DIRECTORY_INDEX}\t{audioName}: Error - has already exists")
+        print(f"{DIRECTORY_INDEX}\t{audioName}: Skip - has already exists")
         return
     get_data_from_speechmatic(row[4], audioName,API_KEY, DIRECTORY_INDEX)
 

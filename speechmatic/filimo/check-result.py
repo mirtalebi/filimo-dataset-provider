@@ -38,6 +38,6 @@ for root, dirs, files in os.walk('content/filimo'):
             continue
         
         if not check_already_exists(row[4], file):
-            print(f"{DIRECTORY_INDEX}\t{file}: Error - has already exists")
+            print(f"{DIRECTORY_INDEX}\t{file}: Error - doesn't exist!")
             break
            
