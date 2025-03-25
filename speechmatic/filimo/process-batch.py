@@ -60,6 +60,7 @@ def get_data_from_speechmatic(predestination, audioName, API_KEY, DIRECTORY_INDE
           transcript = client.wait_for_completion(job_id, transcription_format='json-v2')
           write_to_output(transcript, f"content/filimo/{predestination}/{audioName.split('.')[0]}.sm.json")
           print(f'{DIRECTORY_INDEX}\t{audioName}: DONE')
+          logger.info(f"{audioName}: DONE")
       except HTTPStatusError as e:
           if e.response.status_code == 401:
               logger.error(f"Invalid API key - Check your API_KEY at the top of the code!: {str(e)}")
