@@ -37,7 +37,7 @@ create_tar_gz(output_tar_gz, folder_to_compress)
 
 api.upload_file(
     path_or_fileobj=output_tar_gz,
-    path_in_repo="batch_{batch_number}.tar.gz",
+    path_in_repo=f"batch_{batch_number}.tar.gz",
     repo_id="farsi-asr/filimo-chunked-asr-dataset",
     repo_type="dataset",
 )
