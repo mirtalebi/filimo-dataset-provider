@@ -5,6 +5,8 @@ from speechmatics.models import ConnectionSettings
 from speechmatics.batch_client import BatchClient
 from httpx import HTTPStatusError
 
+API_KEY = input('api key:')
+
 def write_to_output(data, output):
   with open(output, 'w') as f:
     f.write(str(data))
@@ -30,7 +32,7 @@ def check_already_exists(predestination, audioName):
 
 
 def get_data_from_speechmatic(predestination, audioName, DIRECTORY_INDEX):
-  API_KEY = "Ypb08Mu1y4im5i0QapmqSihldZh5tqvF"
+  API_KEY = API_KEY
   LANGUAGE = "fa"
 
   settings = ConnectionSettings(
