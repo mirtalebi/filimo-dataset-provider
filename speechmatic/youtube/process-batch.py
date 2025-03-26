@@ -111,7 +111,7 @@ def process(API_KEY):
        continue
 
     for file in files:
-      if "mp3" in file:
+      if "opus" in file:
         thread = threading.Thread(target=proccess_item, args=(file, API_KEY, DIRECTORY_INDEX, semaphore))
         threads.append(thread)
         thread.start()
