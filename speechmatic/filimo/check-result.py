@@ -14,7 +14,7 @@ def check_invalidation(audioName):
   for row in rows:
     return row
 
-def get_list_from_database(root):
+# def get_list_from_database(root):
    
 
 def check_already_exists(predestination, audioName):
