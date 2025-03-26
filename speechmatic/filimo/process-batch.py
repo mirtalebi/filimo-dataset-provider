@@ -65,9 +65,9 @@ def get_data_from_speechmatic(predestination, audioName, API_KEY, DIRECTORY_INDE
           if e.response.status_code == 401:
               logger.error(f"Invalid API key - Check your API_KEY at the top of the code!: {str(e)}")
           elif e.response.status_code == 400:
-              logger.error(f"Error 400 : {str(e.response.json())}")
+              logger.error(f"{audioName} - Error 400 : {str(e.response.json())}")
           else:
-              logger.error(f"Error UNKNOWNn : {str(e)}")
+              logger.error(f"{audioName} - Error UNKNOWNn : {str(e)}")
           
 
 
