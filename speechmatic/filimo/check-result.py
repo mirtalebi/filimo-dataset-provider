@@ -14,18 +14,16 @@ def check_invalidation(audioName):
   for row in rows:
     return row
 
-# def get_list_from_database(root):
-   
+
 
 def check_already_exists(predestination, audioName):
   audioName = audioName.split('.')[0]
   return os.path.exists(f"content/filimo/{predestination}/{audioName}.sm.json")
 
 
-DIRECTORY_INDEX = -1
+DIRECTORY_INDEX = 0
 for root, dirs, files in os.walk('content/filimo'):
     print(f"Directory: {root}")
-    dbList = get_list_from_database(root)
     DIRECTORY_INDEX = DIRECTORY_INDEX + 1
     for i in tqdm (range (len(files)), desc="Loading..."):
       file = files[i]
@@ -38,6 +36,6 @@ for root, dirs, files in os.walk('content/filimo'):
             continue
         
         if not check_already_exists(row[4], file):
-            print(f"{DIRECTORY_INDEX}\t{file}: Error - doesn't exist!")
-            break
+            print(f"{DIRECTORY_INDEX}\t{file}: Error - has already exists")
+            continue
            
