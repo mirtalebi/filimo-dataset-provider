@@ -4,7 +4,7 @@ from huggingface_hub import hf_hub_download
 def download_batch(batch_name):
   filename = batch_name + ".tar.gz"
   print(filename)
-  hf_hub_download(repo_id="farsi-asr/filimo-chunked-asr-dataset", filename=filename, repo_type="dataset", local_dir="content")
+  hf_hub_download(repo_id="farsi-asr/farsi-youtube-asr-dataset", filename=filename, repo_type="dataset", local_dir="content")
   tar = tarfile.open("content/" + filename)
   tar.extractall(path="content/")
   tar.close()
