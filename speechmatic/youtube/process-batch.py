@@ -103,7 +103,7 @@ def process(API_KEY):
   for root, dirs, files in os.walk(f'content/{batch_name}'):
     print(f"Directory: {root}")
     DIRECTORY_INDEX = DIRECTORY_INDEX + 1
-    max_threads = 10
+    max_threads = 30
     semaphore = threading.Semaphore(max_threads)
     threads = []
 
