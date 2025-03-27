@@ -3,6 +3,8 @@ import os
 import sqlite3
 
 
+SKIP_NUM = int(input('skip num (0):'))
+
 def check_invalidation(audioName):
   conn = sqlite3.connect('content/data.db')
   cursor = conn.cursor()
@@ -23,8 +25,12 @@ def check_already_exists(predestination, audioName):
 
 DIRECTORY_INDEX = 0
 for root, dirs, files in os.walk('content/filimo'):
-    print(f"Directory: {root}")
     DIRECTORY_INDEX = DIRECTORY_INDEX + 1
+    print(f"Directory: {root} - {DIRECTORY_INDEX}")
+
+    if (DIRECTORY_INDEX < SKIP_NUM):
+       continue
+    
     for i in tqdm (range (len(files)), desc="Loading..."):
       file = files[i]
       if "mp3" in file:
