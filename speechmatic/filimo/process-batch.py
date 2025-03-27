@@ -95,7 +95,7 @@ def process(API_KEY):
   for root, dirs, files in os.walk('content/filimo'):
     print(f"Directory: {root}")
     DIRECTORY_INDEX = DIRECTORY_INDEX + 1
-    max_threads = 10
+    max_threads = 80
     semaphore = threading.Semaphore(max_threads)
     threads = []
 
