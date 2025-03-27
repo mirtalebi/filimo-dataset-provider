@@ -35,7 +35,7 @@ for root, dirs, files in os.walk(f'content/{batch_name}'):
     DIRECTORY_INDEX = DIRECTORY_INDEX + 1
     for i in tqdm (range (len(files)), desc="Loading..."):
       file = files[i]
-      if "mp3" in file:
+      if "opus" in file:
         row = check_invalidation(file)
         if not row:
             continue
