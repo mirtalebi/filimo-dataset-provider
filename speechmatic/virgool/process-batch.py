@@ -30,7 +30,6 @@ def get_data():
 
 
 def check_sm_already_exists(cast_hash, episode_hash):
-  audioName = audioName.split('.')[0]
   return os.path.exists(f"content/{cast_hash}/{episode_hash}.sm.json")
 
 
