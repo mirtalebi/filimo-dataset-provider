@@ -2,9 +2,9 @@ import sqlite3
 import os
 import threading
 import requests
-# from speechmatics.models import ConnectionSettings
-# from speechmatics.batch_client import BatchClient
-# from httpx import HTTPStatusError
+from speechmatics.models import ConnectionSettings
+from speechmatics.batch_client import BatchClient
+from httpx import HTTPStatusError
 from utils import SingletonLogger
 
 logger = SingletonLogger().get_logger()
