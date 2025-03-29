@@ -6,6 +6,8 @@ from speechmatics.models import ConnectionSettings
 from speechmatics.batch_client import BatchClient
 from httpx import HTTPStatusError
 from utils import SingletonLogger
+from pathlib import Path
+
 
 logger = SingletonLogger().get_logger()
 API_KEY = input('api key:')
@@ -34,6 +36,9 @@ def check_sm_already_exists(cast_hash, episode_hash):
 
 
 def download_file(cast_hash, episode_hash ,url):
+
+  Path(f"content/{cast_hash}").mkdir(parents=True, exist_ok=True)
+
   ext = url.split('.')[-1]
   if (os.path.exists(f"content/{cast_hash}/{episode_hash}.{ext}")):
      return True
@@ -115,7 +120,7 @@ def proccess_item(API_KEY, episodeHash, url , castHash, semaphore):
 def process(API_KEY):
   data = get_data()
 
-  max_threads = 60
+  max_threads = 3
   semaphore = threading.Semaphore(max_threads)
   threads = []
 
