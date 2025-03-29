@@ -119,7 +119,7 @@ def proccess_item(API_KEY, episodeHash, url , castHash, semaphore):
 def process(API_KEY):
   data = get_data()
 
-  max_threads = 3
+  max_threads = 20
   semaphore = threading.Semaphore(max_threads)
   threads = []
 
