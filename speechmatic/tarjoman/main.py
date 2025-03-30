@@ -5,7 +5,7 @@ import os
 import threading
 from speechmatics.models import ConnectionSettings
 from speechmatics.batch_client import BatchClient
-from httpx import HTTPStatusError
+from httpx import HTTPStatusError, HTTPError
 from utils import SingletonLogger
 import stamina
 import datetime
@@ -35,7 +35,7 @@ def check_already_exists(predestination, audioName):
   return os.path.exists(f"content/{predestination}/{audioName}.sm.json")
 
 
-@stamina.retry(on=httpx.HTTPError, attempts=3)
+@stamina.retry(on=HTTPError, attempts=3)
 def get_data_from_speechmatic(predestination, audioName, API_KEY):
   LANGUAGE = "fa"
 
