@@ -22,7 +22,7 @@ def download_batch(name):
   name_without_ext = (name.split('/')[-1]).split('.')[0]
   hf_hub_download(repo_id="farsi-asr/PerSets-tarjoman-chunked", filename=name, repo_type="dataset", local_dir=f"content")
   tar = tarfile.open("content/" + name)
-  tar.extractall(path=f"content/{name_without_ext}/")
+  tar.extractall(path=f"content/")
   tar.close()
   print("batch " + name + " downloaded")
 
