@@ -10,19 +10,39 @@ from utils import SingletonLogger
 import stamina
 import datetime
 from huggingface_hub import HfFileSystem
-fs = HfFileSystem()
+from huggingface_hub import HfApi
 
+api = HfApi()
+fs = HfFileSystem()
 
 logger = SingletonLogger().get_logger()
 API_KEY = input('api key:')
 
 def download_batch(name):
   name_without_ext = (name.split('/')[-1]).split('.')[0]
-  hf_hub_download(repo_id="farsi-asr/filimo-chunked-asr-dataset", filename=name, repo_type="dataset", local_dir=f"content")
+  hf_hub_download(repo_id="farsi-asr/PerSets-tarjoman-chunked", filename=name, repo_type="dataset", local_dir=f"content")
   tar = tarfile.open("content/" + name)
   tar.extractall(path=f"content/{name_without_ext}/")
   tar.close()
   print("batch " + name + " downloaded")
+
+
+
+
+def rename_old_tar(filename):
+    filename = filename + ".tar.gz"
+    os.rename(f"./content/{filename}", f"./content/{filename}.old")
+
+def create_tar_gz(output_filename, source_dir):
+    try:
+        with tarfile.open(output_filename, "w:gz") as tar:
+            tar.add(source_dir, arcname=os.path.basename(source_dir))
+        print(f"Successfully created {output_filename}")
+    except FileNotFoundError:
+        print(f"Error: Directory '{source_dir}' not found.")
+    except Exception as e:
+        print(f"An error occured: {e}")
+
 
 
 
@@ -98,6 +118,15 @@ def proccess_batch(name, semaphore):
                 
             for thread in threads:
                 thread.join()
+
+        rename_old_tar(name)
+        create_tar_gz(f"./content/{name_without_ext}.tar.gz", f"./content/{name_without_ext}")
+        api.upload_file(
+            path_or_fileobj=f"./content/{name_without_ext}.tar.gz",
+            path_in_repo=f"{name_without_ext}.tar.gz",
+            repo_id="farsi-asr/PerSets-tarjoman-chunked",
+            repo_type="dataset",
+        )
 
 
 def proccess():
