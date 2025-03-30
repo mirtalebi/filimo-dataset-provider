@@ -119,7 +119,7 @@ def proccess_batch(name, semaphore):
             for thread in threads:
                 thread.join()
 
-        rename_old_tar(name)
+        rename_old_tar(name_without_ext)
         create_tar_gz(f"./content/{name_without_ext}.tar.gz", f"./content/{name_without_ext}")
         api.upload_file(
             path_or_fileobj=f"./content/{name_without_ext}.tar.gz",
