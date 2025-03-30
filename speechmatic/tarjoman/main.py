@@ -35,7 +35,7 @@ def check_already_exists(predestination, audioName):
   return os.path.exists(f"content/{predestination}/{audioName}.sm.json")
 
 
-@stamina.retry(attempts=3)
+@stamina.retry(on=httpx.HTTPError, attempts=3)
 def get_data_from_speechmatic(predestination, audioName, API_KEY):
   LANGUAGE = "fa"
 
