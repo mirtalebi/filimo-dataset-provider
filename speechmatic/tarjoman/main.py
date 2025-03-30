@@ -102,6 +102,7 @@ def proccess_item(predestination, audioName, API_KEY, DIRECTORY_INDEX, semaphore
 
 def proccess_batch(name, semaphore):
     with semaphore:
+        print(f"proccess: {name}")
         download_batch(name)
         name_without_ext = (name.split('/')[-1]).split('.')[0]
         for root, dirs, files in os.walk(f'content/{name_without_ext}'):
