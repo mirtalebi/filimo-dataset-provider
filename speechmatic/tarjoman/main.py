@@ -93,12 +93,12 @@ def get_data_from_speechmatic(predestination, audioName, API_KEY):
     
 
 
-def proccess_item(predestination, audioName, API_KEY, DIRECTORY_INDEX, semaphore):
+def proccess_item(predestination, audioName, API_KEY, semaphore):
   with semaphore:
     if check_already_exists(predestination, audioName):
-        print(f"{DIRECTORY_INDEX}\t{audioName}: Skip - has already exists")
+        print(f"\t{audioName}: Skip - has already exists")
         return
-    get_data_from_speechmatic(predestination, audioName,API_KEY, DIRECTORY_INDEX)
+    get_data_from_speechmatic(predestination, audioName,API_KEY)
 
 def proccess_batch(name, semaphore):
     with semaphore:
@@ -107,13 +107,12 @@ def proccess_batch(name, semaphore):
         name_without_ext = (name.split('/')[-1]).split('.')[0]
         for root, dirs, files in os.walk(f'content/{name_without_ext}'):
             print(f"Directory: {root}")
-            DIRECTORY_INDEX = DIRECTORY_INDEX + 1
             max_threads = 60
             semaphore = threading.Semaphore(max_threads)
             threads = []
             for file in files:
                 if "mp3" in file:
-                    thread = threading.Thread(target=proccess_item, args=(name_without_ext, file, API_KEY, DIRECTORY_INDEX, semaphore))
+                    thread = threading.Thread(target=proccess_item, args=(name_without_ext, file, API_KEY, semaphore))
                     threads.append(thread)
                     thread.start()
                 
@@ -140,7 +139,6 @@ def proccess():
             thread = threading.Thread(target=proccess_batch, args=(file['name'].split('/')[-1], semaphore))
             threads.append(thread)
             thread.start()
-            print(file)
     for thread in threads:
         thread.join()
 
