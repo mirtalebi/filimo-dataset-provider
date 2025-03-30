@@ -107,7 +107,7 @@ def proccess_batch(name, semaphore):
         name_without_ext = (name.split('/')[-1]).split('.')[0]
         for root, dirs, files in os.walk(f'content/{name_without_ext}'):
             print(f"Directory: {root}")
-            max_threads = 10
+            max_threads = 15
             semaphore = threading.Semaphore(max_threads)
             threads = []
             for file in files:
@@ -130,7 +130,7 @@ def proccess_batch(name, semaphore):
 
 
 def proccess():
-    max_threads = 10
+    max_threads = 5
     semaphore = threading.Semaphore(max_threads)
     threads = []
     fileList = fs.ls("datasets/farsi-asr/PerSets-tarjoman-chunked", detail=True)
