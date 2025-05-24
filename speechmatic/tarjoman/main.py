@@ -34,6 +34,7 @@ def count_all_subfolders_os_walk(directory_path):
         return -1
 
     count = 0
+    print(directory_path)
     for root, dirnames, filenames in os.walk(directory_path):
         count += len(dirnames)
     return count
