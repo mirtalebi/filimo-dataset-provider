@@ -131,7 +131,7 @@ def proccess_batch(name, semaphore):
 
         # rename_old_tar(name_without_ext)
         if count_all_subfolders_os_walk(f'content/{name_without_ext}') == lastFilesCount:
-            print(f"proccess: {name} - no new files found, skipping")
+            print(f"proccess: {name} - no new files found, skipping - {count_all_subfolders_os_walk(f'content/{name_without_ext}')} / {lastFilesCount}")
             shutil.rmtree(f"./content/{name_without_ext}")
             return
         else:
