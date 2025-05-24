@@ -1,5 +1,6 @@
 
 import tarfile
+import shutil
 from huggingface_hub import hf_hub_download
 import os
 import threading
@@ -26,8 +27,15 @@ def download_batch(name):
   tar.close()
   print("batch " + name + " downloaded")
 
+def count_all_subfolders_os_walk(directory_path):
+    if not os.path.isdir(directory_path):
+        print(f"Error: '{directory_path}' is not a valid directory.")
+        return -1
 
-
+    count = 0
+    for root, dirnames, filenames in os.walk(directory_path):
+        count += len(dirnames)
+    return count
 
 def rename_old_tar(filename):
     filename = filename + ".tar.gz"
@@ -105,6 +113,7 @@ def proccess_batch(name, semaphore):
         print(f"proccess: {name}")
         download_batch(name)
         name_without_ext = (name.split('/')[-1]).split('.')[0]
+        lastFilesCount = count_all_subfolders_os_walk(f'content/{name_without_ext}')
         for root, dirs, files in os.walk(f'content/{name_without_ext}'):
             print(f"Directory: {root}")
             max_threads = 5
@@ -119,23 +128,31 @@ def proccess_batch(name, semaphore):
             for thread in threads:
                 thread.join()
 
-        rename_old_tar(name_without_ext)
-        create_tar_gz(f"./content/{name_without_ext}.tar.gz", f"./content/{name_without_ext}")
-        api.upload_file(
-            path_or_fileobj=f"./content/{name_without_ext}.tar.gz",
-            path_in_repo=f"{name_without_ext}.tar.gz",
-            repo_id="farsi-asr/PerSets-tarjoman-chunked",
-            repo_type="dataset",
-        )
+        # rename_old_tar(name_without_ext)
+        if count_all_subfolders_os_walk(f'content/{name_without_ext}') == lastFilesCount:
+            print(f"proccess: {name} - no new files found, skipping")
+            shutil.rmtree(f"./content/{name_without_ext}")
+            return
+        else:
+            create_tar_gz(f"./content/{name_without_ext}.tar.gz", f"./content/{name_without_ext}")
+            api.upload_file(
+                path_or_fileobj=f"./content/{name_without_ext}.tar.gz",
+                path_in_repo=f"{name_without_ext}.tar.gz",
+                repo_id="farsi-asr/PerSets-tarjoman-chunked",
+                repo_type="dataset",
+            )
+        
+        shutil.rmtree(f"./content/{name_without_ext}")
+        os.remove(f"./content/{name_without_ext}.tar.gz")
 
 
 def proccess():
-    max_threads = 5
+    max_threads = 2
     semaphore = threading.Semaphore(max_threads)
     threads = []
     fileList = fs.ls("datasets/farsi-asr/PerSets-tarjoman-chunked", detail=True)
     for file in fileList:
-        if ".tar.gz" in file['name'] and file['last_commit'].date.replace(tzinfo=datetime.timezone.utc) < datetime.datetime(2025, 3, 30, 0,0,0, tzinfo=datetime.timezone.utc):
+        if ".tar.gz" in file['name'] and file['last_commit'].date.replace(tzinfo=datetime.timezone.utc) < datetime.datetime(2025, 5, 24, 0,0,0, tzinfo=datetime.timezone.utc):
             thread = threading.Thread(target=proccess_batch, args=(file['name'].split('/')[-1], semaphore))
             threads.append(thread)
             thread.start()
