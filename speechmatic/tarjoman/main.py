@@ -115,7 +115,7 @@ def proccess_batch(name, semaphore):
         print(f"proccess: {name}")
         download_batch(name)
         name_without_ext = (name.split('/')[-1]).split('.')[0]
-        lastFilesCount = count_all_subfolders_os_walk(f'content/{name_without_ext}')
+        lastFilesCount = len(os.listdir(f'content/{name_without_ext}'))
         for root, dirs, files in os.walk(f'content/{name_without_ext}'):
             print(f"Directory: {root}")
             max_threads = 5
@@ -131,8 +131,8 @@ def proccess_batch(name, semaphore):
                 thread.join()
 
         # rename_old_tar(name_without_ext)
-        if count_all_subfolders_os_walk(f'content/{name_without_ext}') == lastFilesCount:
-            print(f"proccess: {name} - no new files found, skipping - {count_all_subfolders_os_walk(f'content/{name_without_ext}')} / {lastFilesCount}")
+        if len(os.listdir(f'content/{name_without_ext}')) == lastFilesCount:
+            print(f"proccess: {name} - no new files found, skipping - {len(os.listdir(f'content/{name_without_ext}'))} / {lastFilesCount}")
             shutil.rmtree(f"./content/{name_without_ext}")
             return
         else:
