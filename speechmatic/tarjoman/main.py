@@ -147,7 +147,7 @@ def proccess_batch(name, semaphore):
 
 
 def proccess():
-    max_threads = 2
+    max_threads = 1
     semaphore = threading.Semaphore(max_threads)
     threads = []
     fileList = fs.ls("datasets/farsi-asr/PerSets-tarjoman-chunked", detail=True)
