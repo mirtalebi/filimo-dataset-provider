@@ -1,6 +1,7 @@
 
 import tarfile
 import shutil
+import time
 from huggingface_hub import hf_hub_download
 import os
 import threading
@@ -144,6 +145,7 @@ def proccess_batch(name, semaphore):
         
         shutil.rmtree(f"./content/{name_without_ext}")
         os.remove(f"./content/{name_without_ext}.tar.gz")
+        time.sleep(5)
 
 
 def proccess():
