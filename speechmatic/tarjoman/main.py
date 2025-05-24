@@ -104,7 +104,7 @@ def get_data_from_speechmatic(predestination, audioName, API_KEY):
 def proccess_item(predestination, audioName, API_KEY, semaphore):
   with semaphore:
     if check_already_exists(predestination, audioName):
-        print(f"\t{audioName}: Skip - has already exists")
+        # print(f"\t{audioName}: Skip - has already exists")
         return
     get_data_from_speechmatic(predestination, audioName,API_KEY)
 
